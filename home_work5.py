@@ -1,6 +1,13 @@
 # Задача 1
 # Из двух случайных чисел, одно из которых четное, а другое нечетное, определить и вывести на экран нечетное число.
-
+# print("Введите четное и нечетное числа. ")
+# num_1 = int(input("Введите первое число: "))
+# num_2 = int(input("Введите второе число: "))
+#
+# if num_1 % 2 != 0:
+#     print(f"Первое число {num_1} нечетное.")
+# elif num_2 % 2 != 0:
+#     print(f"Второе число {num_2} нечетное.")
 
 # Задача 2.
 # Вводятся три разных числа. Найти, какое из них является средним (больше одного, но меньше другого).
@@ -92,6 +99,18 @@
 #           f"Частное от деления = {str(a)}, а остаток = {str(b)}" )
 
 # Задача 9
+a = """
+#   File "leveleUp.py", line 34
+#     tem = 5 if current_temperature >= 5
+# SyntaxError: invalid syntax
+# """
+#
+# b = """
+# Traceback (most recent call last):
+#   File "leveleUp.py", line 18, in <module>
+#     print("current_temperature: ---------", current_temperature, f"Type is: ----- {type(current_temperature)}")
+# NameError: name 'current_temperature' is not defined
+# """
 
 
 # Задача 10
