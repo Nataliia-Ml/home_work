@@ -11,7 +11,7 @@ print(names)
 
 # Метод .copy копирует список
 names_2 = names.copy()
-print(f" Lists names_2 is {names_2}")
+print(names_2)
 
 # Метод .extend(name_list) добавляет элементы списка name_list в конец другого списка
 names_3 = ["Mary", "Alice", "Kathy"]
