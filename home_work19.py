@@ -48,6 +48,3 @@ if __name__ == '__main__':
     j1.add_mentor(s)
     j2.add_mentor(s)
     print(f"List of pavadans for mentor {s.name} is {[self.name for self in s.pavadans]}")
-
-
-
