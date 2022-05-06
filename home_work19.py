@@ -24,7 +24,9 @@ class Junior(Developer):
         self.plan = plan
 
     def add_mentor(self, mentor):
-        mentor.add_padavans(self)
+        self.mentor = mentor
+        if self not in mentor.padavans:
+            mentor.padavans.append(self)
 
 
 class Senior(Developer):
@@ -35,8 +37,9 @@ class Senior(Developer):
             self.padavans.append(padavans)
 
     def add_padavans(self, padavans):
-        self.padavans.append(padavans)
-        padavans.mentor = self
+        if padavans not in self.padavans:
+            self.padavans.append(padavans)
+            padavans.mentor = self
 
 
 s = Senior("Bob", 18, "Python", 2800.0)
@@ -46,5 +49,10 @@ j2 = Junior("Mary", 22, "Python", 900)
 
 if __name__ == '__main__':
     j1.add_mentor(s)
+    j1.add_mentor(s)
+    s.add_padavans(j1)
     j2.add_mentor(s)
+    s.add_padavans(j2)
     print(f"List of padavans for mentor {s.name} is {[self.name for self in s.padavans]}")
+    print(f"Mentor for {j1.name} is {j1.mentor.name}")
+    print(f"Mentor for {j2.name} is {j2.mentor.name}")
