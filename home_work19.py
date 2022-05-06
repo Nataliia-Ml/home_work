@@ -30,12 +30,12 @@ class Junior(Developer):
 class Senior(Developer):
     def __init__(self, name, age, profile, salary, padavans=None):
         super().__init__(name, age, profile, salary)
-        self.pavadans = list()
+        self.padavans = list()
         if padavans is not None:
-            self.pavadans.append(padavans)
+            self.padavans.append(padavans)
 
     def add_padavans(self, padavans):
-        self.pavadans.append(padavans)
+        self.padavans.append(padavans)
         padavans.mentor = self
 
 
@@ -47,7 +47,4 @@ j2 = Junior("Mary", 22, "Python", 900)
 if __name__ == '__main__':
     j1.add_mentor(s)
     j2.add_mentor(s)
-    print(f"List of pavadans for mentor {s.name} is {[self.name for self in s.pavadans]}")
-
-
-
+    print(f"List of padavans for mentor {s.name} is {[self.name for self in s.padavans]}")
