@@ -1,3 +1,6 @@
+from typing import Union, List
+
+
 class Developer:
     def __init__(self, name, age, profile, salary):
         self.name = name
@@ -20,39 +23,43 @@ class Developer:
 class Junior(Developer):
     def __init__(self, name, age, profile, salary, mentor=None, plan=None):
         super().__init__(name, age, profile, salary)
-        self.mentor = mentor
+        self._mentor = None
+        self.change_mentor(mentor=mentor)
         self.plan = plan
 
-    def add_mentor(self, mentor):
-        self.mentor = mentor
-        if self not in mentor.padavans:
-            mentor.padavans.append(self)
+    def change_mentor(self, mentor):
+        if mentor and mentor != self._mentor:
+            if not isinstance(mentor, Senior):
+                raise ValueError(f"mentor must be instance of {Senior} not {type(mentor)}")
+            self._mentor = mentor
+            mentor.add_padavans(self)
 
 
 class Senior(Developer):
     def __init__(self, name, age, profile, salary, padavans=None):
         super().__init__(name, age, profile, salary)
-        self.padavans = list()
-        if padavans is not None:
-            self.padavans.append(padavans)
+        self._padavans = list()
+        self.add_padavans(padavans)
 
-    def add_padavans(self, padavans):
-        if padavans not in self.padavans:
-            self.padavans.append(padavans)
-            padavans.mentor = self
+    def add_padavans(self, padavan: Union[Junior, List[Junior]]):
+        if not padavan:
+            return False
+
+        padavans = []
+        if isinstance(padavan, list):
+            padavans.extend(padavan)
+        else:
+            padavans.append(padavan)
+
+        if not all([isinstance(obj, Junior) for obj in padavans]):
+            raise ValueError(f"padavan must be instance of {Junior} not {type(padavan)}")
+
+        for padavan in padavans:
+            if padavan and padavan not in self._padavans:
+                self._padavans.append(padavan)
+                padavan.change_mentor(self)
 
 
 s = Senior("Bob", 18, "Python", 2800.0)
 j1 = Junior("Fill", 19, "Python", 900)
 j2 = Junior("Mary", 22, "Python", 900)
-
-
-if __name__ == '__main__':
-    j1.add_mentor(s)
-    j1.add_mentor(s)
-    s.add_padavans(j1)
-    j2.add_mentor(s)
-    s.add_padavans(j2)
-    print(f"List of padavans for mentor {s.name} is {[self.name for self in s.padavans]}")
-    print(f"Mentor for {j1.name} is {j1.mentor.name}")
-    print(f"Mentor for {j2.name} is {j2.mentor.name}")
