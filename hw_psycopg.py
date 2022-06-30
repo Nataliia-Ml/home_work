@@ -1,4 +1,20 @@
 import psycopg2
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+
+connection_data = {
+    "host": "localhost",
+    "dbname": "shop",
+    "user": "postgres",
+    "password": "postgres"
+}
+
+conn = psycopg2.connect(**connection_data)
+conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+cursor = conn.cursor()
+cursor.execute("CREATE DATABASE new_shop")
+cursor.close()
+conn.close()
+
 
 connection_data = {
     'host': "localhost",
@@ -12,49 +28,49 @@ with psycopg2.connect(**connection_data) as conn:
     conn.set_session(autocommit=True)
     with conn.cursor() as cursor:
         cursor.execute("DROP TABLE IF EXISTS client, products, orders, order_status, cart")
-        cursor.execute("DROP SEQUENCE IF EXISTS client_id_seq, products_id_seq, order_status_id_seq, orders_id_seq")
+        # cursor.execute("DROP SEQUENCE IF EXISTS client_id_seq, products_id_seq, order_status_id_seq, orders_id_seq")
 
         cursor.execute(
             """
             CREATE TABLE client(
-            id INT PRIMARY KEY, 
+            id SERIAL PRIMARY KEY, 
             name VARCHAR(15),
             dob TIMESTAMP,
             email VARCHAR(20))
             """
         )
 
-        cursor.execute("CREATE SEQUENCE client_id_seq")
-        cursor.execute("ALTER TABLE client ALTER COLUMN id SET DEFAULT nextval('client_id_seq')")
+        # cursor.execute("CREATE SEQUENCE client_id_seq")
+        # cursor.execute("ALTER TABLE client ALTER COLUMN id SET DEFAULT nextval('client_id_seq')")
 
         cursor.execute(
             """
             CREATE TABLE products(
-            id INT PRIMARY KEY,
+            id SERIAL PRIMARY KEY,
             name VARCHAR(30),
             description TEXT,
             price FLOAT)
             """
         )
 
-        cursor.execute("CREATE SEQUENCE products_id_seq")
-        cursor.execute("ALTER TABLE products ALTER COLUMN id SET DEFAULT nextval('products_id_seq')")
+        # cursor.execute("CREATE SEQUENCE products_id_seq")
+        # cursor.execute("ALTER TABLE products ALTER COLUMN id SET DEFAULT nextval('products_id_seq')")
 
         cursor.execute(
             """
             CREATE TABLE order_status(
-            id INTEGER PRIMARY KEY,
+            id SERIAL PRIMARY KEY,
             status VARCHAR(10))
             """
         )
 
-        cursor.execute("CREATE SEQUENCE order_status_id_seq")
-        cursor.execute("ALTER TABLE order_status ALTER COLUMN id SET DEFAULT nextval('order_status_id_seq')")
+        # cursor.execute("CREATE SEQUENCE order_status_id_seq")
+        # cursor.execute("ALTER TABLE order_status ALTER COLUMN id SET DEFAULT nextval('order_status_id_seq')")
 
         cursor.execute(
             """
             CREATE TABLE orders(
-            id INTEGER PRIMARY KEY,
+            id SERIAL PRIMARY KEY,
             order_date TIMESTAMP NOT NULL DEFAULT NOW(),
             payday TIMESTAMP, 
             client_id INTEGER REFERENCES client(id),
@@ -62,8 +78,8 @@ with psycopg2.connect(**connection_data) as conn:
             """
         )
 
-        cursor.execute("CREATE SEQUENCE orders_id_seq")
-        cursor.execute("ALTER TABLE orders ALTER COLUMN id SET DEFAULT nextval('orders_id_seq')")
+        # cursor.execute("CREATE SEQUENCE orders_id_seq")
+        # cursor.execute("ALTER TABLE orders ALTER COLUMN id SET DEFAULT nextval('orders_id_seq')")
 
         cursor.execute(
             """
