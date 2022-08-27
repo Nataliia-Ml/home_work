@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Article(models.Model):
@@ -20,24 +21,34 @@ class Article(models.Model):
     )
     tags = models.ManyToManyField("Tag", related_name="articles")
 
+    def get_absolute_url(self):
+        return reverse("get_article_details", kwargs={"pk": self.id})
+
     def __str__(self):
-        return f"{self.title} - {self.content} - {self.rubric} - {self.author} - {self.tags}"
+        return f"{self.title} - {self.rubric.subject} - {self.author.name}"
 
 
 class Rubric(models.Model):
     subject = models.CharField(max_length=30, unique=True)
 
+    def get_absolute_url(self):
+        return reverse("get_rubric_details", kwargs={"pk": self.id})
+
     def __str__(self):
-        return f"Subject of Rubric: {self.subject} "
+        return f"Subject of Rubric: {self.subject} - {self.id}"
 
 
 class Author(models.Model):
     name = models.CharField(max_length=40)
     occupation = models.CharField(max_length=30)
     email = models.EmailField()
+    rubrics = models.ManyToManyField("Rubric", related_name="authors")
+
+    def get_absolute_url(self):
+        return reverse("get_author_details", kwargs={"pk": self.id})
 
     def __str__(self):
-        return f"Author: {self.name} - {self.occupation} - {self.email}"
+        return f"Author: {self.name} - {self.rubrics}"
 
 
 class Tag(models.Model):
@@ -48,6 +59,9 @@ class Tag(models.Model):
         on_delete=models.SET_NULL,
         null=True,
     )
+
+    def get_absolute_url(self):
+        return reverse("get_tag_details", kwargs={"pk": self.id})
 
     def __str__(self):
         return f"Tag title - {self.title}. Rubric - {self.rubric}"

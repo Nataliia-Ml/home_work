@@ -1,9 +1,15 @@
-import random
+from random import choices, randint
 
 from django.core.management import BaseCommand
-from faker import Faker
 
-from articles.management.commands._common import rubrics_with_tags
+from articles.management.commands._common import (
+    rubrics_with_tags,
+    get_jobs,
+    get_names,
+    get_emails,
+    get_title,
+    get_content,
+)
 from articles.models import (
     Article,
     Tag,
@@ -15,12 +21,23 @@ from articles.models import (
 class Command(BaseCommand):
     help = "This command fill DB with mocked data"
 
+    def add_arguments(self, parser):
+        parser.add_argument('-a', '--authors', type=int, help="Authors to be created")
+        parser.add_argument(
+            "-A",
+            "--articles-per-author",
+            type=int, help="Articles to be created for each author.")
+
     def handle(self, *args, **options):
+        authors_amount = options.get("authors")
+        articles_per_author = options.get("articles_per_author")
+
+        print(f"Options: {options}")
         self.stdout.write("Fill DB start")
         self.clear_tables()
         self.create_rubrics_tags()
-        self.create_authors()
-        self.create_articles()
+        self.create_authors(amount=authors_amount)
+        self.create_articles(articles_per_author=articles_per_author)
         self.stdout.write("Fill DB done")
 
     def clear_tables(self):
@@ -35,27 +52,30 @@ class Command(BaseCommand):
             tags_objects = [Tag(title=tag, rubric=rubric) for tag in tags]
             Tag.objects.bulk_create(tags_objects)
 
-    def create_authors(self):
+    def create_authors(self, amount=1):
         self.stdout.write("Create Authors")
-        faker = Faker()
-        for _ in range(10):
-            Author.objects.create(name=faker.name(), occupation=faker.job(), email=faker.email())
+        data = zip(get_names(amount), get_jobs(amount), get_emails(amount))
+        authors_obj = [Author(name=n, occupation=j, email=e) for n, j, e in data]
+        authors_models = Author.objects.bulk_create(authors_obj)
 
-    def create_articles(self):
+        # rubrics - QuerySet - Look like list and behave like list
+        rubrics = Rubric.objects.all()
+        for author in authors_models:
+            author.rubrics.set(choices(rubrics, k=randint(1, 2)))
+
+    @staticmethod
+    def create_article(author):
+        author_rubric = author.rubrics.order_by("?").first()
+        tags = choices(author_rubric.tags.all(), k=3)
+        article = Article.objects.create(
+            title=get_title(),
+            content=get_content(),
+            author=author,
+            rubric=author_rubric,
+        )
+        article.tags.set(tags)
+
+    def create_articles(self, articles_per_author=3):
         self.stdout.write("Create Articles")
-        all_authors = list(Author.objects.all())
-        while all_authors:
-            author: Author = all_authors.pop()
-            faker = Faker()
-            all_rubric = Rubric.objects.all()
-            for _ in range(3):
-                random_rubric: Rubric = random.choice(all_rubric)
-                all_tags_in_rubric = random_rubric.tags.all()
-                random_tag: Tag = random.choice(all_tags_in_rubric)
-                article = Article.objects.create(
-                    title=faker.text(max_nb_chars=20),
-                    content=faker.paragraph(),
-                    rubric=random_rubric,
-                    author=author,
-                )
-                article.tags.add(random_tag)
+        authors = Author.objects.all()
+        [self.create_article(author) for _ in range(articles_per_author) for author in authors]
