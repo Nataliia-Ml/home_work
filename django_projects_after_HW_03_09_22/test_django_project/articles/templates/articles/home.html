@@ -1,0 +1,13 @@
+{% extends "articles/base.html" %}
+
+{% block content %}
+    {% for model, url in models.items %}
+        <div class="list-group">
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="http://127.0.0.1:8000/articles-section/{{ url }}" class="list-group-item list-group-item-primary">
+                    {{ model }}
+                </a>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}
