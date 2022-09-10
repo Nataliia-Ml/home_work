@@ -1,0 +1,29 @@
+{% extends "articles/base.html" %}
+
+{% block content %}
+    {% for article in article_list %}
+        {% include "articles/includes/article_card.html" %}
+    {% endfor %}
+
+    {% if is_paginated %}
+        <ul>
+            {% if page_obj.has_previous %}
+                <li>
+                    <a href="?page={{ page_obj.previous_page_number }}"> <span> &laquo;</span></a>
+                </li>
+            {% endif %}
+
+            {% block pagination %}
+                {% for page_number in page_obj.paginator.page_range %}
+                    {{page_number}}
+                {% endfor %}
+            {% endblock %}
+
+            {% if page_obj.has_next %}
+                <li>
+                    <a href="?page={{ page_obj.next_page_number }}"><span>&raquo;</span></a>
+                </li>
+            {% endif %}
+        </ul>
+    {% endif %}
+{% endblock %}
